@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "diagram: lint",
+      "type": "shell",
+      "command": "python scripts/diagram_lint.py",
+      "windows": {
+        "command": "py -3 scripts/diagram_lint.py"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "diagram: lint changed",
+      "type": "shell",
+      "command": "python scripts/diagram_lint.py --changed",
+      "windows": {
+        "command": "py -3 scripts/diagram_lint.py --changed"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

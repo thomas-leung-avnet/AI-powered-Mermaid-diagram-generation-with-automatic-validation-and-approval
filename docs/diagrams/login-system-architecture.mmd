@@ -1,0 +1,36 @@
+---
+title: Login System - Request Flow to Token Issuance
+config:
+  theme: neutral
+  look: classic
+  layout: dagre
+---
+flowchart LR
+  %% Legend: --> sync, --x failure
+  
+  subgraph legend["Legend"]
+    sync-arrow["→ synchronous call"]
+    error-arrow["--x error/failure path"]
+  end
+  
+  subgraph login-scope["Login System Scope"]
+    user-client["User Client"]
+    api-gateway["API Gateway"]
+    auth-service["Auth Service"]
+    user-database[("User Database")]
+  end
+  
+  user-client -->|"submits credentials<br>(username + password)"| api-gateway
+  api-gateway -->|"schema validation<br>(required fields, format)"| api-gateway
+  api-gateway -->|"forwards credentials"| auth-service
+  auth-service -->|"queries user record"| user-database
+  user-database -->|"returns user record<br>(with password hash)"| auth-service
+  auth-service -->|"compares password hash"| auth-service
+  auth-service -->|"issues JWT token<br>(valid 1 hour)"| api-gateway
+  api-gateway -->|"returns token response<br>(includes expiry)"| user-client
+  
+  user-database --x|"user not found"| auth-service
+  auth-service --x|"password mismatch"| api-gateway
+  api-gateway --x|"returns auth error<br>(401 Unauthorized)"| user-client
+  
+  user-client -->|"uses token in<br>subsequent requests"| api-gateway

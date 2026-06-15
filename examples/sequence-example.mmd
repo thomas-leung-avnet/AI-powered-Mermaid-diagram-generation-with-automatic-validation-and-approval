@@ -1,0 +1,20 @@
+﻿---
+title: Login Flow
+config:
+  theme: neutral
+  look: classic
+  layout: dagre
+---
+sequenceDiagram
+  participant user as user-client
+  participant api as auth-api
+  participant db as user-db
+
+  user->>api: submits credentials
+  api->>db: fetches user record
+  db-->>api: returns user data
+  alt credentials valid
+    api-->>user: returns access token
+  else credentials invalid
+    api--xuser: returns auth error
+  end

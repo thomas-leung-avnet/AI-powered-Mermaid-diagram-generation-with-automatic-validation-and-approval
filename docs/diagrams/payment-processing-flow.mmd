@@ -1,0 +1,35 @@
+---
+title: Payment Processing Flow
+config:
+  theme: neutral
+  look: classic
+---
+sequenceDiagram
+  %% Legend: blue=request, green=success, red=error/timeout
+  
+  box Payment Processing Scope
+    participant Client as Client
+    participant Gateway as Gateway
+    participant Processor as Processor
+  end
+
+  Client->>|"request"| Gateway: Submit payment
+  Gateway->>|"authorize"| Processor: Check payment
+  
+  alt Success
+    Processor-->>|"approve"| Gateway: Card valid
+    Gateway-->>|"confirm"| Client: Token issued
+  else Declined
+    Processor-->>|"decline"| Gateway: Card rejected
+    Gateway-->>|"error"| Client: Payment failed
+  else Expired
+    Processor-->>|"expired"| Gateway: Card expired
+    Gateway-->>|"error"| Client: Expired card
+  else Timeout
+    Processor--x|"timeout"| Gateway: No response
+    Gateway-->>|"error"| Client: Service timeout
+  end
+
+  Note over Client,Gateway: Scope: Payment initiation through settlement
+
+

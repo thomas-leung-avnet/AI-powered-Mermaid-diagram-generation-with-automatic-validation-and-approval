@@ -1,0 +1,28 @@
+---
+title: Login System - Architecture
+config:
+  theme: neutral
+  look: classic
+  layout: dagre
+---
+flowchart LR
+  subgraph legend-boundary["Legend"]
+    legend-sync["Solid arrow: synchronous call"]
+    legend-error["Error arrow: failure path"]
+  end
+
+  user-client["User Client"]
+
+  subgraph login-system-boundary["Login System Scope"]
+    api-gateway["API Gateway"]
+    auth-service["Auth Service"]
+    user-database[("User Database")]
+  end
+
+  user-client -->|"submits login request"| api-gateway
+  api-gateway -->|"forwards credentials"| auth-service
+  auth-service -->|"fetches user record"| user-database
+  user-database -->|"returns user data"| auth-service
+  auth-service -->|"returns access token"| api-gateway
+  api-gateway -->|"returns token response"| user-client
+  auth-service --x|"returns auth error"| api-gateway

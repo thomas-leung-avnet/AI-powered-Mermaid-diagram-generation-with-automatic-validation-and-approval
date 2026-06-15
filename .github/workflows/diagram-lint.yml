@@ -1,0 +1,37 @@
+name: diagram-lint
+
+on:
+  pull_request:
+    paths:
+      - "docs/diagrams/**"
+      - "diagram-spec.yaml"
+      - "diagram-spec.md"
+      - "checklists/review-checklist.md"
+      - "scripts/diagram_lint.py"
+  push:
+    branches: ["main"]
+    paths:
+      - "docs/diagrams/**"
+      - "diagram-spec.yaml"
+      - "diagram-spec.md"
+      - "checklists/review-checklist.md"
+      - "scripts/diagram_lint.py"
+
+jobs:
+  lint-diagrams:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (no external actions)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git init .
+          git remote add origin "${{ github.server_url }}/${{ github.repository }}"
+          git -c http.extraheader="AUTHORIZATION: bearer ${GH_TOKEN}" fetch --depth=1 origin "${{ github.sha }}"
+          git checkout --detach FETCH_HEAD
+
+      - name: Verify Python
+        run: python3 --version
+
+      - name: Run diagram lint
+        run: python3 scripts/diagram_lint.py

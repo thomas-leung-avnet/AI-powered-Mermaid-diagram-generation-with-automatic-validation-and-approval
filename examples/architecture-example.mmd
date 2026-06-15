@@ -1,0 +1,20 @@
+﻿---
+title: Order API - High Level
+config:
+  theme: neutral
+  look: classic
+  layout: dagre
+---
+flowchart LR
+  %% Legend: --> sync, -.-> async, --x failure
+  customer[Customer]
+  gateway[api-gateway]
+  order-service[order-service]
+  order-db[(order-db)]
+  event-bus[order-events]
+
+  customer -->|submits order| gateway
+  gateway -->|validates request| order-service
+  order-service -->|persists order| order-db
+  order-service -.->|publishes order-created| event-bus
+  order-service --x|returns validation error| gateway

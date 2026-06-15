@@ -1,0 +1,162 @@
+﻿version: "1.0.0"
+name: "team-diagram-spec-v1"
+
+scope:
+  applies_to:
+    - shared-diagrams
+    - pr-diagrams
+  excludes:
+    - personal-notes
+
+formats:
+  primary: mermaid
+  allowed_extensions:
+    - .mmd
+    - .md
+  diagram_root: "docs/diagrams"
+
+diagram_types:
+  - architecture
+  - sequence
+  - process
+
+required_sections:
+  - title
+  - legend
+  - scope_boundary
+  - main_flow
+  - error_flow_optional
+  - assumptions_optional
+
+notation:
+  allowed_nodes:
+    - actor
+    - service_api
+    - process_step
+    - decision
+    - data_store
+    - queue_event_bus
+    - external_dependency
+    - boundary_group
+  allowed_edges:
+    - type: solid
+      meaning: synchronous_call
+    - type: dashed
+      meaning: async_event
+    - type: dotted
+      meaning: optional_conditional
+    - type: error
+      meaning: failure_path
+
+naming:
+  node_id_regex: "^[a-z0-9]+(-[a-z0-9]+)*$"
+  max_label_length: 40
+  edge_label_style: "verb_phrase"
+  forbidden_edge_labels:
+    - handle
+    - process
+    - do stuff
+
+layout:
+  default_direction: LR
+  max_nodes_per_diagram: 15
+  require_grouping_by_boundary: true
+  discourage_line_crossing: true
+
+mermaid_profile:
+  version_policy:
+    pin_mermaid_major: 11
+    pin_renderer_in_ci: true
+
+  allowed_diagram_keywords:
+    architecture: ["flowchart"]
+    sequence: ["sequenceDiagram"]
+    process: ["flowchart"]
+
+  flowchart:
+    allowed_directions: ["LR"]
+    allowed_node_shapes:
+      - rect
+      - rounded
+      - diamond
+      - cyl
+      - subgraph
+    allowed_edges:
+      - "-->"
+      - "-.->"
+      - "--x"
+    disallow:
+      - "style"
+      - "classDef"
+      - "click"
+      - "img:"
+      - "icon:"
+      - "%%{ }%%"
+
+  sequence:
+    allowed_arrows:
+      - "->>"
+      - "-->>"
+      - "-)"
+      - "--x"
+    allowed_blocks:
+      - "alt"
+      - "opt"
+      - "loop"
+      - "par"
+    disallow:
+      - "link "
+      - "links "
+      - "rect rgb"
+      - "%%{ }%%"
+
+  frontmatter_defaults:
+    required: true
+    template:
+      config:
+        theme: "neutral"
+        look: "classic"
+        layout: "dagre"
+
+  syntax_guardrails:
+    forbid_lowercase_end_in_flowchart: true
+    require_quotes_for_special_text: true
+    allow_comments_prefix_only: "%%"
+    require_node_id_regex: "^[a-z0-9]+(-[a-z0-9]+)*$"
+
+  security:
+    allow_interactivity: false
+    require_security_level_for_web_render: "strict"
+
+compliance:
+  fail_if:
+    - unapproved_symbol_used
+    - missing_required_section
+    - invalid_node_id
+    - missing_main_flow
+    - unexplained_custom_notation
+  warning_if:
+    - exceeds_max_nodes
+    - ambiguous_label_detected
+
+extensions:
+  allowed: true
+  proposal_required_fields:
+    - symbol_name
+    - meaning
+    - usage_rule
+    - example
+  approval_sla_hours: 48
+  versioning: semver
+
+ci:
+  enforce_on_paths:
+    - "docs/diagrams/**"
+  block_merge_on_fail: true
+  require_checklist_in_pr: true
+
+validation_pipeline:
+  - parse_mermaid
+  - rule_lint
+  - canonicalize_sort_nodes_edges
+  - fail_on_violation

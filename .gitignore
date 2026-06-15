@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# VS Code
+.vscode/settings.local.json
+.vscode/launch.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Node (if using Mermaid CLI locally)
+node_modules/
+package-lock.json
+
+# Test outputs
+test-results/
+.coverage/
+htmlcov/
